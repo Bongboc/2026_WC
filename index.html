@@ -483,11 +483,11 @@ const FORM = {
 const RESULTS = {
   "Mexico":[["Nam Phi",2,0,"W"],["Hàn Quốc",1,0,"W"]],"Nam Phi":[["Mexico",0,2,"L"],["CH Séc",1,1,"D"]],
   "Hàn Quốc":[["CH Séc",2,1,"W"],["Mexico",0,1,"L"]],"CH Séc":[["Hàn Quốc",1,2,"L"],["Nam Phi",1,1,"D"]],
-  "Canada":[["Bosnia & Herzegovina",1,1,"D"],["Qatar",6,0,"W"]],"Bosnia & Herzegovina":[["Canada",1,1,"D"],["Thụy Sỹ",1,4,"L"]],
+  "Canada":[["Bosnia & Herzegovina",1,1,"D"],["Qatar",6,0,"W"],["Thụy Sỹ",1,2,"L"]],"Bosnia & Herzegovina":[["Canada",1,1,"D"],["Thụy Sỹ",1,4,"L"],["Qatar",3,1,"W"]],
   "Mỹ":[["Paraguay",4,1,"W"],["Australia",2,0,"W"]],"Paraguay":[["Mỹ",1,4,"L"],["Thổ Nhĩ Kỳ",1,0,"W"]],
-  "Qatar":[["Thụy Sỹ",1,1,"D"],["Canada",0,6,"L"]],"Thụy Sỹ":[["Qatar",1,1,"D"],["Bosnia & Herzegovina",4,1,"W"]],
-  "Brazil":[["Morocco",1,1,"D"],["Haiti",3,0,"W"]],"Morocco":[["Brazil",1,1,"D"],["Scotland",1,0,"W"]],
-  "Scotland":[["Haiti",1,0,"W"],["Morocco",0,1,"L"]],"Haiti":[["Scotland",0,1,"L"],["Brazil",0,3,"L"]],
+  "Qatar":[["Thụy Sỹ",1,1,"D"],["Canada",0,6,"L"],["Bosnia & Herzegovina",1,3,"L"]],"Thụy Sỹ":[["Qatar",1,1,"D"],["Bosnia & Herzegovina",4,1,"W"],["Canada",2,1,"W"]],
+  "Brazil":[["Morocco",1,1,"D"],["Haiti",3,0,"W"],["Scotland",3,0,"W"]],"Morocco":[["Brazil",1,1,"D"],["Scotland",1,0,"W"],["Haiti",4,2,"W"]],
+  "Scotland":[["Haiti",1,0,"W"],["Morocco",0,1,"L"],["Brazil",0,3,"L"]],"Haiti":[["Scotland",0,1,"L"],["Brazil",0,3,"L"],["Morocco",2,4,"L"]],
   "Australia":[["Thổ Nhĩ Kỳ",2,0,"W"],["Mỹ",0,2,"L"]],"Thổ Nhĩ Kỳ":[["Australia",0,2,"L"],["Paraguay",0,1,"L"]],
   "Đức":[["Curacao",7,1,"W"],["Bờ Biển Ngà",2,1,"W"]],"Curacao":[["Đức",1,7,"L"],["Ecuador",0,0,"D"]],
   "Bờ Biển Ngà":[["Ecuador",1,0,"W"],["Đức",1,2,"L"]],"Ecuador":[["Bờ Biển Ngà",0,1,"L"],["Curacao",0,0,"D"]],
@@ -535,7 +535,7 @@ let DATA=RAW.map(r=>{
 [...DATA].sort((a,b)=>b.fifa-a.fifa).forEach((d,i)=>{ d.rank=i+1; });
 
 var _lu=document.getElementById('sidebarUpdate');
-if(_lu) _lu.textContent='24/06/2026 — lượt 3 đang mở kèo (6/24 trận: bảng A, B, C)';
+if(_lu) _lu.textContent='25/06/2026 — lượt 3: bảng B,C đã xong (4/6 KQ); bảng A (CH Séc–Mexico, Nam Phi–HQ) chờ đá';
 
 function fmt(n){return n.toFixed(1);}
 
@@ -585,6 +585,10 @@ const PLAYED_R2 = {
   "Panama|Croatia":[0,1],
   "Colombia|CHDC Congo":[1,0],
   // Lượt 3 vòng bảng — thêm kết quả vào đây khi trận đá xong (key đúng chiều như FIXTURES lượt 3)
+  "Bosnia & Herzegovina|Qatar": [3,1],
+  "Thụy Sỹ|Canada": [2,1],
+  "Morocco|Haiti": [4,2],
+  "Scotland|Brazil": [0,3],
 };
 
 // ── Kèo chấp tự động lấy từ gibot.top (key: "tA|tB", value: chấp tính theo B−A) ──
@@ -593,10 +597,6 @@ const PLAYED_R2 = {
 const HANDICAP_GIBOT = {
   "CH Séc|Mexico": 0.5,            // gibot: Mexico (P) chấp 0.5
   "Nam Phi|Hàn Quốc": 1.0,         // gibot: Hàn Quốc (P) chấp 1.0
-  "Bosnia & Herzegovina|Qatar": -1.0, // gibot: Bosnia (T) chấp 1.0
-  "Thụy Sỹ|Canada": -0.5,          // gibot: Thụy Sỹ (T) chấp 0.5
-  "Morocco|Haiti": -2.0,           // gibot: Morocco (T) chấp 2.0
-  "Scotland|Brazil": 2.0,          // gibot: Brazil (P) chấp 2.0
 };
 
 // ── Dữ liệu kèo chấp bán nguyên (Asian handicap) từ bet365 cho từng trận (key: "tA|tB") ──
@@ -623,27 +623,6 @@ const BET365_ODDS = {
   "Nam Phi|Hàn Quốc": {fav:'B', ladder:[
     {line:-0.5, oddsFav:1.625, oddsUnd:2.250},
     {line:-1.5, oddsFav:2.750, oddsUnd:1.425},
-  ]},
-  // Bảng B
-  "Bosnia & Herzegovina|Qatar": {fav:'A', ladder:[
-    {line:-0.5, oddsFav:1.375, oddsUnd:3.000},
-    {line:-1.5, oddsFav:2.050, oddsUnd:1.750},
-    {line:-2.5, oddsFav:3.550, oddsUnd:1.275},
-  ]},
-  "Thụy Sỹ|Canada": {fav:'A', ladder:[
-    {line:-0.5, oddsFav:2.250, oddsUnd:1.625},
-    {line:-1.5, oddsFav:4.500, oddsUnd:1.190},
-  ]},
-  // Bảng C
-  "Morocco|Haiti": {fav:'A', ladder:[
-    {line:-1.5, oddsFav:1.550, oddsUnd:2.375},
-    {line:-2.5, oddsFav:2.375, oddsUnd:1.550},
-    {line:-3.5, oddsFav:4.250, oddsUnd:1.210},
-  ]},
-  "Scotland|Brazil": {fav:'B', ladder:[
-    {line:-0.5, oddsFav:1.300, oddsUnd:3.450},
-    {line:-1.5, oddsFav:2.000, oddsUnd:1.850},
-    {line:-2.5, oddsFav:3.450, oddsUnd:1.300},
   ]},
 };
 
@@ -1398,36 +1377,36 @@ const PREMATCH_NEWS={
     {t:"⚠️","n":"Thất bại 1-2 trước Hàn Quốc — bắt buộc phải thắng để còn hy vọng đi tiếp"},
   ],
   "Canada":[
-    {t:"🔥","n":"Đại thắng Qatar 6-0 ở lượt 2 — Jonathan David lập hat-trick, vươn lên đầu bảng"},
-    {t:"📋","n":"Jesse Marsch có nhiều phương án xoay tua trước lượt 3 nhờ cách biệt bàn thắng lớn"},
+    {t:"💔","n":"Thua Thụy Sỹ 1-2 ở lượt 3 — Jonathan David rút ngắn phút 76 nhưng không lật ngược thế cờ"},
+    {t:"📋","n":"4 điểm, GD +5 — nhiều khả năng vào vòng 1/8 với tư cách nhì bảng B hoặc đội 3 tốt nhất"},
   ],
   "Qatar":[
-    {t:"💔","n":"Thua đậm Canada 0-6 ở lượt 2, hiệu số bàn thắng xấu, áp lực phải thắng lượt 3"},
-    {t:"⚠️","n":"Akram Afif đã nhận thẻ vàng lượt 1, cần tránh tiếp tục mắc lỗi phòng ngự"},
+    {t:"💔","n":"Thua Bosnia 1-3 ở lượt 3 — kết thúc vòng bảng với 1 điểm, GD -8, chắc chắn bị loại"},
+    {t:"📋","n":"Al-Haydos ghi bàn danh dự phút 42 nhưng không đủ sức cản bước Bosnia"},
   ],
   "Thụy Sỹ":[
-    {t:"💔","n":"Manuel Akanji rời sân sớm lượt 1 vì căng cơ, chờ đánh giá trước trận với Bosnia"},
-    {t:"🔥","n":"Granit Xhaka chơi xuất sắc, phủ sóng toàn bộ tuyến giữa — đầu tàu của Nati"},
+    {t:"🔥","n":"Thắng Canada 2-1 ở lượt 3 — Vargas khai thông phút 46, Manzambi ấn định phút 57"},
+    {t:"🏆","n":"7 điểm, GD +5 — dẫn đầu bảng B, chắc suất vào vòng 1/8"},
   ],
   "Bosnia & Herzegovina":[
-    {t:"📋","n":"Edin Džeko tuyên bố đây có thể là World Cup cuối trong sự nghiệp — quyết tâm cao"},
-    {t:"⚠️","n":"Hàng thủ để thủng lưới pha phản công nhanh ở lượt 1 — cần cảnh giác hơn"},
+    {t:"🔥","n":"Thắng Qatar 3-1 ở lượt 3 — Alajbegovic (29'), Abunada OG (34'), Mahmic (80')"},
+    {t:"📋","n":"4 điểm, GD -1 — chờ kết quả các bảng để biết có vào vòng 1/8 với tư cách đội 3"},
   ],
   "Brazil":[
-    {t:"🔥","n":"Đại thắng Haiti 3-0 ở lượt 2 — Matheus Cunha lập cú đôi, Vinicius Jr. ấn định tỷ số"},
-    {t:"📋","n":"Raphinha có bàn bị từ chối vì việt vị phút 12 — vẫn tạo sức ép cực lớn lên khung thành Haiti"},
+    {t:"🔥","n":"Hủy diệt Scotland 3-0 ở lượt 3 — Vinícius Jr. lập cú đôi (7', 45'+3'), Cunha kết liễu phút 60"},
+    {t:"🏆","n":"7 điểm, GD +6 — dẫn đầu bảng C, vào vòng 1/8 với phong độ áp đảo"},
   ],
   "Scotland":[
-    {t:"💔","n":"Bất ngờ thua Morocco 0-1 ở lượt 2 sau khi bị Saibari chọc thủng lưới chỉ sau 72 giây"},
-    {t:"⚠️","n":"HLV Clarke cần điều chỉnh lại lối chơi trước lượt 3 quyết định để giữ cơ hội đi tiếp"},
+    {t:"💔","n":"Thua tan tác Brazil 0-3 ở lượt 3 — kết thúc vòng bảng 3 điểm, GD -3"},
+    {t:"📋","n":"Chờ kết quả tất cả bảng để biết có vào vòng 1/8 với tư cách đội 3 tốt nhất"},
   ],
   "Morocco":[
-    {t:"🔥","n":"Thắng Scotland 1-0 nhờ bàn mở tỷ số chớp nhoáng của Ismael Saibari — vươn lên đầu bảng C"},
-    {t:"📋","n":"Hòa Brazil rồi thắng Scotland — chỉ cần 1 điểm trước Haiti là chắc suất đi tiếp"},
+    {t:"🔥","n":"Thắng đậm Haiti 4-2 ở lượt 3 — Hakimi, Saibari, Rahimi, Yassine đều ghi bàn"},
+    {t:"🏆","n":"7 điểm, GD +3 — vào vòng 1/8 với tư cách nhì bảng C (sau Brazil về GD)"},
   ],
   "Haiti":[
-    {t:"💔","n":"Thua đậm Brazil 0-3 ở lượt 2, đứng bét bảng C với hiệu số rất xấu"},
-    {t:"⚠️","n":"Cần thắng Scotland ở lượt 3 và chờ các kết quả khác để còn cơ hội mong manh"},
+    {t:"💔","n":"Thua Morocco 2-4 ở lượt 3 — kết thúc vòng bảng 0 điểm, GD -6, bị loại"},
+    {t:"📋","n":"Bounou phản lưới phút 10, Isidor rút ngắn 43' nhưng không đủ sức cầm chân Morocco"},
   ],
   "Mỹ":[
     {t:"🔥","n":"Thắng Australia 2-0 ở lượt 2 (phản lưới của Burgess + đánh đầu của Alex Freeman) — sớm giành vé vòng 1/8"},
