@@ -535,7 +535,7 @@ let DATA=RAW.map(r=>{
 [...DATA].sort((a,b)=>b.fifa-a.fifa).forEach((d,i)=>{ d.rank=i+1; });
 
 var _lu=document.getElementById('sidebarUpdate');
-if(_lu) _lu.textContent='26/06/2026 — lượt 3: bảng A,B,C,E,F đã xong (10 KQ); bảng D chờ đá (Paraguay–Úc, Thổ Nhĩ Kỳ–Mỹ). Bảng G–L: 26–28/06';
+if(_lu) _lu.textContent='26/06/2026 — lượt 3: bảng A,B,C,E,F đã xong; bảng D chờ đá (Paraguay–Úc, Thổ Nhĩ Kỳ–Mỹ); bảng G,H,I có kèo bet365 (NZ–Bỉ, Cape Verde–Ả Rập, Uruguay–TBN, Na Uy–Pháp, Senegal–Iraq). Bảng J–L: sắp có.';
 
 function fmt(n){return n.toFixed(1);}
 
@@ -554,6 +554,9 @@ const FIXTURES=[
   ["D","Paraguay","Australia"],["D","Thổ Nhĩ Kỳ","Mỹ"],
   ["E","Curacao","Bờ Biển Ngà"],["E","Ecuador","Đức"],
   ["F","Nhật Bản","Thụy Điển"],["F","Tunisia","Hà Lan"],
+  ["G","New Zealand","Bỉ"],
+  ["H","Cape Verde","Saudi Arabia"],["H","Uruguay","Tây Ban Nha"],
+  ["I","Na Uy","Pháp"],["I","Senegal","Iraq"],
 ];
 
 // ── Kho TÍCH LŨY kết quả mọi trận đã đá qua các lượt (key: "home|away", value: [gf,ga]) ──
@@ -610,6 +613,12 @@ const HANDICAP_GIBOT = {
   // Lượt 3 — còn lại bảng D (chờ đá)
   "Paraguay|Australia": -0.5,      // gibot: Paraguay (T) chấp 0.5
   "Thổ Nhĩ Kỳ|Mỹ": 0.5,           // gibot: USA (P) chấp 0.5
+  // Bảng G, H, I (kèo bet365 26/06/2026 — dùng main AH làm proxy gibot)
+  "New Zealand|Bỉ": 2.5,           // Bỉ chấp 2.5 (main -2.0,-2.5)
+  "Cape Verde|Saudi Arabia": 0,    // ngang bằng (main 0.0)
+  "Uruguay|Tây Ban Nha": 1.0,      // TBN chấp 1.0 (main -1.0)
+  "Na Uy|Pháp": 1.0,               // Pháp chấp 1.0 (main -1.0)
+  "Senegal|Iraq": -2.0,            // Senegal chấp 2.0 (main -1.5,-2.0)
 };
 
 // ── Lưu kèo gibot của mọi trận đã kết thúc (để tính kèo-accuracy bền vững) ──
@@ -658,6 +667,33 @@ const BET365_ODDS = {
     {line:-0.5, oddsFav:1.825, oddsUnd:2.025},
     {line:-1.5, oddsFav:3.000, oddsUnd:1.375},
     {line:-2.5, oddsFav:6.000, oddsUnd:1.125},
+  ]},
+  // Bảng G, H, I — kèo bet365 26/06/2026
+  "New Zealand|Bỉ": {fav:'B', ladder:[
+    {line:-0.5, oddsFav:1.140, oddsUnd:5.750},
+    {line:-1.5, oddsFav:1.450, oddsUnd:2.675},
+    {line:-2.5, oddsFav:2.100, oddsUnd:1.700},
+    {line:-3.5, oddsFav:3.450, oddsUnd:1.300},
+  ]},
+  "Cape Verde|Saudi Arabia": {fav:'A', ladder:[
+    {line:-0.5, oddsFav:2.600, oddsUnd:1.475},
+    {line:-1.5, oddsFav:5.750, oddsUnd:1.140},
+  ]},
+  "Uruguay|Tây Ban Nha": {fav:'B', ladder:[
+    {line:-0.5, oddsFav:1.500, oddsUnd:2.500},
+    {line:-1.5, oddsFav:2.500, oddsUnd:1.500},
+    {line:-2.5, oddsFav:5.250, oddsUnd:1.160},
+  ]},
+  "Na Uy|Pháp": {fav:'B', ladder:[
+    {line:-0.5, oddsFav:1.550, oddsUnd:2.375},
+    {line:-1.5, oddsFav:2.375, oddsUnd:1.550},
+    {line:-2.5, oddsFav:4.250, oddsUnd:1.210},
+  ]},
+  "Senegal|Iraq": {fav:'A', ladder:[
+    {line:-0.5, oddsFav:1.220, oddsUnd:4.150},
+    {line:-1.5, oddsFav:1.650, oddsUnd:2.200},
+    {line:-2.5, oddsFav:2.675, oddsUnd:1.450},
+    {line:-3.5, oddsFav:4.800, oddsUnd:1.175},
   ]},
 };
 
@@ -723,9 +759,36 @@ const BET365_ODDS_HISTORY = {
   ]},
   "Tunisia|Hà Lan": {fav:'B', ladder:[
     {line:-1.5, oddsFav:1.325, oddsUnd:3.300},
-    {line:-2.5, oddsFav:1.900, oddsUnd:1.950},
+    {line:-2.5, oddsFav:1.950, oddsUnd:1.900},
     {line:-3.5, oddsFav:3.000, oddsUnd:1.375},
     {line:-4.5, oddsFav:5.500, oddsUnd:1.150},
+  ]},
+  // Bảng G, H, I — kèo bet365 26/06/2026
+  "New Zealand|Bỉ": {fav:'B', ladder:[
+    {line:-0.5, oddsFav:1.140, oddsUnd:5.750},
+    {line:-1.5, oddsFav:1.450, oddsUnd:2.675},
+    {line:-2.5, oddsFav:2.100, oddsUnd:1.700},
+    {line:-3.5, oddsFav:3.450, oddsUnd:1.300},
+  ]},
+  "Cape Verde|Saudi Arabia": {fav:'A', ladder:[
+    {line:-0.5, oddsFav:2.600, oddsUnd:1.475},
+    {line:-1.5, oddsFav:5.750, oddsUnd:1.140},
+  ]},
+  "Uruguay|Tây Ban Nha": {fav:'B', ladder:[
+    {line:-0.5, oddsFav:1.500, oddsUnd:2.500},
+    {line:-1.5, oddsFav:2.500, oddsUnd:1.500},
+    {line:-2.5, oddsFav:5.250, oddsUnd:1.160},
+  ]},
+  "Na Uy|Pháp": {fav:'B', ladder:[
+    {line:-0.5, oddsFav:1.550, oddsUnd:2.375},
+    {line:-1.5, oddsFav:2.375, oddsUnd:1.550},
+    {line:-2.5, oddsFav:4.250, oddsUnd:1.210},
+  ]},
+  "Senegal|Iraq": {fav:'A', ladder:[
+    {line:-0.5, oddsFav:1.220, oddsUnd:4.150},
+    {line:-1.5, oddsFav:1.650, oddsUnd:2.200},
+    {line:-2.5, oddsFav:2.675, oddsUnd:1.450},
+    {line:-3.5, oddsFav:4.800, oddsUnd:1.175},
   ]},
 };
 
