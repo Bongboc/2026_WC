@@ -651,10 +651,10 @@ const PLAYED_R2 = {
 const HANDICAP_GIBOT = {
   // Bảng A–L đã đá xong → đã chuyển sang HANDICAP_GIBOT_HISTORY.
   // Knockout R32 (còn 2 trận chưa đá)
-  "Mỹ|Bosnia & Herzegovina": -1.0, // Mỹ chấp 1.0 (trận #76)
+  "Mỹ|Bosnia & Herzegovina": -1.25, // Mỹ chấp 1.25 (quarter line thật, main -1.25)
   "Anh|CHDC Congo": -1.5,          // Anh chấp 1.5 (trận #82)
-  // R16 (đầu 07/2026 — main AH quarter -0.25 → proxy -0.5)
-  "Bỉ|Senegal": -0.5,              // Bỉ chấp 0.5
+  // R16 (đầu 07/2026 — main AH quarter -0.25, Bỉ chấp 1/4)
+  "Bỉ|Senegal": -0.25,            // quarter line thật — không proxy 0.5 nữa
 };
 
 // ── Lưu kèo gibot của mọi trận đã kết thúc (để tính kèo-accuracy bền vững) ──
@@ -697,9 +697,9 @@ const HANDICAP_GIBOT_HISTORY = {
   "Brazil|Nhật Bản": -1.0,
   "Đức|Paraguay": -1.5,
   "Hà Lan|Morocco": -0.5,
-  "Bờ Biển Ngà|Na Uy": 0.5,
+  "Bờ Biển Ngà|Na Uy": 0.25,   // quarter line thật (main -0.25, Na Uy chấp 1/4) — không proxy 0.5 nữa
   "Pháp|Thụy Điển": -1.5,
-  "Mexico|Ecuador": -0.5,
+  "Mexico|Ecuador": -0.25,     // quarter line thật (main -0.25, Mexico chấp 1/4)
 };
 
 // ── Dữ liệu kèo chấp bán nguyên (Asian handicap) từ bet365 cho từng trận (key: "tA|tB") ──
@@ -731,9 +731,9 @@ const BET365_ODDS = {
     {line:-1.5, oddsFav:3.900, oddsUnd:1.240},
   ]},
   "Anh|CHDC Congo": {fav:'A', ladder:[
-    {line:-0.5, oddsFav:1.275, oddsUnd:3.550},
-    {line:-1.5, oddsFav:1.950, oddsUnd:1.900},
-    {line:-2.5, oddsFav:3.450, oddsUnd:1.300},
+    {line:-0.5, oddsFav:1.300, oddsUnd:3.450},
+    {line:-1.5, oddsFav:1.700, oddsUnd:2.100},
+    {line:-2.5, oddsFav:3.550, oddsUnd:1.275},
     {line:-3.5, oddsFav:7.000, oddsUnd:1.100},
   ]},
 };
@@ -914,9 +914,9 @@ const BET365_ODDS_HISTORY = {
     {line:-1.5, oddsFav:3.900, oddsUnd:1.240},
   ]},
   "Anh|CHDC Congo": {fav:'A', ladder:[
-    {line:-0.5, oddsFav:1.275, oddsUnd:3.550},
-    {line:-1.5, oddsFav:1.950, oddsUnd:1.900},
-    {line:-2.5, oddsFav:3.450, oddsUnd:1.300},
+    {line:-0.5, oddsFav:1.300, oddsUnd:3.450},
+    {line:-1.5, oddsFav:1.700, oddsUnd:2.100},
+    {line:-2.5, oddsFav:3.550, oddsUnd:1.275},
     {line:-3.5, oddsFav:7.000, oddsUnd:1.100},
   ]},
 };
@@ -1442,6 +1442,14 @@ function renderPredictionStatsBet365(){
 // ── Tách xác suất theo kèo chấp: lớn hơn / bằng / nhỏ hơn kèo (chênh lệch tỉ số luôn là số nguyên) ──
 const _predBuckets={};
 function handicapSplit(buckets,h){
+  // Kèo QUARTER (…±0.25 / ±0.75): stake bị tách đôi — nửa đặt ở mốc bán nguyên thấp hơn (h−0.25),
+  // nửa ở mốc cao hơn (h+0.25). Trả về trung bình 2 nửa. Đây là cách xử lý ĐÚNG kèo 1/4:
+  // ví dụ chấp 0.25 = nửa kèo 0 (hoà ⇒ push) + nửa kèo 0.5 (hoà ⇒ cửa dưới ăn). Nếu không tách,
+  // buckets số-nguyên khiến 0.25 bị tính y hệt 0.5 → lật nhầm dự đoán sang cửa dưới (bug đã gặp).
+  if(Math.abs((h*4)%2)===1){
+    const lo=handicapSplit(buckets,h-0.25), hi=handicapSplit(buckets,h+0.25);
+    return {gt:(lo.gt+hi.gt)/2, eq:(lo.eq+hi.eq)/2, lt:(lo.lt+hi.lt)/2};
+  }
   const R=(buckets.length-1)/2;
   let pGt=0,pEq=0,pLt=0;
   buckets.forEach((p,i)=>{
