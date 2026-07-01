@@ -535,7 +535,7 @@ let DATA=RAW.map(r=>{
 [...DATA].sort((a,b)=>b.fifa-a.fifa).forEach((d,i)=>{ d.rank=i+1; });
 
 var _lu=document.getElementById('sidebarUpdate');
-if(_lu) _lu.textContent='01/07/2026 — R32: 7/9 xong (BBN 1–2 Na Uy, Pháp 3–0 Thụy Điển, Mexico 2–0 Ecuador mới nhất). Chờ Mỹ–Bosnia, Anh–CHDC + R16 Bỉ–Senegal.';
+if(_lu) _lu.textContent='01/07/2026 — R32 gần xong; đã kéo kèo gibot cho R16 (10 trận: Bỉ–Senegal, TBN–Áo, BĐN–Croatia, Thụy Sỹ–Algeria, Argentina–Cape Verde, Australia–Ai Cập, Colombia–Ghana). Chờ ảnh bet365.';
 
 function fmt(n){return n.toFixed(1);}
 
@@ -572,6 +572,12 @@ const FIXTURES=[
   ["R32","Anh","CHDC Congo"],
   // Vòng knockout R16 (đầu 07/2026)
   ["R16","Bỉ","Senegal"],
+  ["R16","Tây Ban Nha","Áo"],
+  ["R16","Bồ Đào Nha","Croatia"],
+  ["R16","Thụy Sỹ","Algeria"],
+  ["R16","Argentina","Cape Verde"],
+  ["R16","Australia","Ai Cập"],
+  ["R16","Colombia","Ghana"],
 ];
 
 // ── Kho TÍCH LŨY kết quả mọi trận đã đá qua các lượt (key: "home|away", value: [gf,ga]) ──
@@ -651,10 +657,17 @@ const PLAYED_R2 = {
 const HANDICAP_GIBOT = {
   // Bảng A–L đã đá xong → đã chuyển sang HANDICAP_GIBOT_HISTORY.
   // Knockout R32 (còn 2 trận chưa đá)
-  "Mỹ|Bosnia & Herzegovina": -1.25, // Mỹ chấp 1.25 (quarter line thật, main -1.25)
+  "Mỹ|Bosnia & Herzegovina": -1.0, // Mỹ chấp 1.0 (gibot #76 — lấy đúng, không làm tròn)
   "Anh|CHDC Congo": -1.5,          // Anh chấp 1.5 (trận #82)
-  // R16 (đầu 07/2026 — main AH quarter -0.25, Bỉ chấp 1/4)
-  "Bỉ|Senegal": -0.25,            // quarter line thật — không proxy 0.5 nữa
+  // R16 (đầu 07/2026)
+  "Bỉ|Senegal": -0.5,             // Bỉ chấp 0.5 (gibot #83 — lấy đúng, không làm tròn)
+  // R16 thêm từ gibot.top 01/07/2026 (chưa có ảnh bet365 → chưa có quarter chi tiết)
+  "Tây Ban Nha|Áo": -1.5,         // TBN chấp 1.5 (#84)
+  "Bồ Đào Nha|Croatia": -1.0,     // BĐN chấp 1.0 (#85)
+  "Thụy Sỹ|Algeria": -0.5,        // Thụy Sỹ chấp 0.5 (#86)
+  "Argentina|Cape Verde": -2.5,   // Argentina chấp 2.5 (#80)
+  "Australia|Ai Cập": 0.5,        // Ai Cập chấp 0.5 (#87)
+  "Colombia|Ghana": 1.0,          // Ghana chấp 1.0 (#88)
 };
 
 // ── Lưu kèo gibot của mọi trận đã kết thúc (để tính kèo-accuracy bền vững) ──
@@ -697,9 +710,9 @@ const HANDICAP_GIBOT_HISTORY = {
   "Brazil|Nhật Bản": -1.0,
   "Đức|Paraguay": -1.5,
   "Hà Lan|Morocco": -0.5,
-  "Bờ Biển Ngà|Na Uy": 0.25,   // quarter line thật (main -0.25, Na Uy chấp 1/4) — không proxy 0.5 nữa
+  "Bờ Biển Ngà|Na Uy": 0.5,    // Na Uy chấp 0.5 (gibot #78 — lấy đúng)
   "Pháp|Thụy Điển": -1.5,
-  "Mexico|Ecuador": -0.25,     // quarter line thật (main -0.25, Mexico chấp 1/4)
+  "Mexico|Ecuador": -0.5,      // Mexico chấp 0.5 (gibot #81 — lấy đúng)
 };
 
 // ── Dữ liệu kèo chấp bán nguyên (Asian handicap) từ bet365 cho từng trận (key: "tA|tB") ──
