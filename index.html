@@ -737,20 +737,19 @@ const BET365_ODDS = {
   // Knockout R32 — Brazil-Nhật, Đức-Paraguay, Hà Lan-Morocco đã đá xong, xóa khỏi đây.
   // R32/R16 (Mỹ-Bosnia, Bỉ-Senegal, Anh-CHDC Congo đã đá xong, xóa khỏi đây)
   "Tây Ban Nha|Áo": {fav:'A', ladder:[
-    {line:-0.5, oddsFav:1.200, oddsUnd:4.400},
-    {line:-1.5, oddsFav:1.725, oddsUnd:2.075},
-    {line:-2.5, oddsFav:3.100, oddsUnd:1.350},
-    {line:-3.5, oddsFav:6.400, oddsUnd:1.115},
+    {line:-0.5, oddsFav:1.300, oddsUnd:3.450},
+    {line:-1.5, oddsFav:2.000, oddsUnd:1.850},
+    {line:-2.5, oddsFav:3.450, oddsUnd:1.300},
+    {line:-3.5, oddsFav:6.800, oddsUnd:1.105},
   ]},
   "Bồ Đào Nha|Croatia": {fav:'A', ladder:[
-    {line:-0.5, oddsFav:1.275, oddsUnd:3.550},
-    {line:-1.5, oddsFav:2.250, oddsUnd:1.625},
-    {line:-2.5, oddsFav:4.150, oddsUnd:1.220},
+    {line:-0.5, oddsFav:1.750, oddsUnd:2.050},
+    {line:-1.5, oddsFav:3.000, oddsUnd:1.375},
+    {line:-2.5, oddsFav:6.000, oddsUnd:1.125},
   ]},
   "Thụy Sỹ|Algeria": {fav:'A', ladder:[
-    {line:-0.5, oddsFav:1.450, oddsUnd:2.675},
-    {line:-1.5, oddsFav:2.350, oddsUnd:1.575},
-    {line:-2.5, oddsFav:5.000, oddsUnd:1.170},
+    {line:-0.5, oddsFav:2.050, oddsUnd:1.800},
+    {line:-1.5, oddsFav:3.800, oddsUnd:1.250},
   ]},
 };
 
@@ -936,20 +935,19 @@ const BET365_ODDS_HISTORY = {
     {line:-3.5, oddsFav:7.000, oddsUnd:1.100},
   ]},
   "Tây Ban Nha|Áo": {fav:'A', ladder:[
-    {line:-0.5, oddsFav:1.200, oddsUnd:4.400},
-    {line:-1.5, oddsFav:1.725, oddsUnd:2.075},
-    {line:-2.5, oddsFav:3.100, oddsUnd:1.350},
-    {line:-3.5, oddsFav:6.400, oddsUnd:1.115},
+    {line:-0.5, oddsFav:1.300, oddsUnd:3.450},
+    {line:-1.5, oddsFav:2.000, oddsUnd:1.850},
+    {line:-2.5, oddsFav:3.450, oddsUnd:1.300},
+    {line:-3.5, oddsFav:6.800, oddsUnd:1.105},
   ]},
   "Bồ Đào Nha|Croatia": {fav:'A', ladder:[
-    {line:-0.5, oddsFav:1.275, oddsUnd:3.550},
-    {line:-1.5, oddsFav:2.250, oddsUnd:1.625},
-    {line:-2.5, oddsFav:4.150, oddsUnd:1.220},
+    {line:-0.5, oddsFav:1.750, oddsUnd:2.050},
+    {line:-1.5, oddsFav:3.000, oddsUnd:1.375},
+    {line:-2.5, oddsFav:6.000, oddsUnd:1.125},
   ]},
   "Thụy Sỹ|Algeria": {fav:'A', ladder:[
-    {line:-0.5, oddsFav:1.450, oddsUnd:2.675},
-    {line:-1.5, oddsFav:2.350, oddsUnd:1.575},
-    {line:-2.5, oddsFav:5.000, oddsUnd:1.170},
+    {line:-0.5, oddsFav:2.050, oddsUnd:1.800},
+    {line:-1.5, oddsFav:3.800, oddsUnd:1.250},
   ]},
 };
 
@@ -1490,6 +1488,41 @@ function handicapSplit(buckets,h){
   });
   return {gt:pGt*100,eq:pEq*100,lt:pLt*100};
 }
+// ── Kiểm tra chéo tự động kèo bet365 vs kèo gibot (chống lỗi nhập liệu) ──
+// Nguyên lý: kèo chính gibot là mốc thị trường CÂN BẰNG nhất ⇒ split tại h phải ~50/50.
+// Nếu 1 bên >60% ngay tại kèo chính ⇒ khả năng cao ladder nhập lệch dòng (lấy nhầm mốc 0.0
+// hoặc mốc quarter của bảng Alternative làm mốc bán nguyên). Đã xảy ra 2 lần (Bồ Đào Nha,
+// Thụy Sỹ) — cùng 1 kiểu lỗi: odds "0.0" nhập thành "-0.5", quarter "-0.5,-1.0" thành "-1.5".
+function validateBet365Ladders(){
+  const warns=[];
+  Object.entries(BET365_ODDS).forEach(([key,entry])=>{
+    const fav=resolveFav(key,entry);
+    if(!fav) return;
+    const buckets=marginDistFromLadder(entry.ladder,fav);
+    if(!buckets) return;
+    const h=Object.prototype.hasOwnProperty.call(HANDICAP_GIBOT,key)?HANDICAP_GIBOT[key]:null;
+    if(h===null) return;
+    const s=handicapSplit(buckets,h);
+    const balA=s.lt+s.eq/2; // % nghiêng về tA sau khi chia đôi phần hoà kèo
+    if(balA<40||balA>60){
+      warns.push(`⚠️ ${key}: split tại kèo chính ${h} = ${balA.toFixed(1)}% cho đội A — lệch xa 50/50, nghi nhập sai ladder (kiểm tra lại mốc -0.5/-1.5/-2.5 so với ảnh bet365, coi chừng lấy nhầm mốc 0.0 hoặc quarter).`);
+    }
+    // Mốc -0.5 bắt buộc + odds phải tăng dần theo độ sâu kèo
+    const sorted=[...entry.ladder].sort((a,b)=>b.line-a.line);
+    if(!sorted.length||sorted[0].line!==-0.5){
+      warns.push(`⚠️ ${key}: ladder thiếu mốc -0.5 (mốc nông nhất hiện là ${sorted.length?sorted[0].line:'—'}).`);
+    }
+    for(let i=1;i<sorted.length;i++){
+      if(sorted[i].oddsFav<=sorted[i-1].oddsFav||sorted[i].oddsUnd>=sorted[i-1].oddsUnd){
+        warns.push(`⚠️ ${key}: odds không đơn điệu giữa mốc ${sorted[i-1].line} và ${sorted[i].line} (oddsFav phải tăng, oddsUnd phải giảm khi kèo sâu hơn).`);
+      }
+    }
+  });
+  warns.forEach(w=>console.warn(w));
+  return warns;
+}
+validateBet365Ladders();
+
 function updateHandicap(idx,tA,tB){
   const inp=document.getElementById('hcp-'+idx);
   if(!inp) return;
